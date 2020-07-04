@@ -1,3 +1,5 @@
+//Dependencies
+//_______________________________________________
 const mysql = require("mysql2");
 
 const connection = mysql.createConnection({
@@ -5,7 +7,7 @@ const connection = mysql.createConnection({
   port: 5000,
   user: "root",
   password: "EmnvaznkzN7!",
-  database: "",
+  database: "employees",
 });
 
 connection.connect(function (err) {
@@ -16,7 +18,6 @@ connection.connect(function (err) {
 
 const questionnaire = require("./sections/questionnaire");
 const fs = require("fs");
-// const filename = "README-user.md";
 
 // array of questions for user
 const questions = [];
