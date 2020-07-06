@@ -18,20 +18,25 @@ const connection = mysql.createConnection({
 });
 
 // function to write README file
-function writeToFile(fileName, data) {
-  fs.writeFile(fileName, data, (err) => {
-    if (err) throw err;
-    process.exit(1);
-    console.log("The file has been saved!");
-  });
-}
+// function writeToFile(fileName, data) {
+//   fs.writeFile(fileName, data, (err) => {
+//     if (err) throw err;
+//     process.exit(1);
+//     console.log("The file has been saved!");
+//   });
+// }
 
 connection.connect(function (err) {
   if (err) throw err;
   console.log("connected as id" + connection.threadId);
-  connection.end();
+  afterConnection();
 });
 
-console.log(department);
-console.log(role);
-console.log(employee);
+function afterConnection() {
+  connection.query("SELECT * FROM role", function (err, res) {
+    if (err) throw err;
+    console.log(res);
+    res.forEach((role) => console.log(`${role.title}: ${role.salary}`));
+    connection.end();
+  });
+}
