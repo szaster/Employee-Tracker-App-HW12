@@ -33,23 +33,30 @@ const choices = {
   removeEmployee: "Remove Employee",
   updateEmployee: "Update Employee Role",
   updateEmployeeManager: "Update Employee Manager",
+  exit: "Exit",
 };
 
+function employeeSearch(connection) {
+  const query =
+    "SELECT employee.person_id, employee.first_name, employee.last_name, role.title, department.Department, role.salary, manager_id FROM employee JOIN role on employee.role_id = role.Role_id JOIN department on role.department_id = department.Department_id";
+  return connection.query(query, (err, res) => {
+    console.table(res);
+    runSearch(connection);
+  });
+}
+
 function runSearch(connection) {
-  inquirer
+  return inquirer
     .prompt({
       type: "rawlist",
       name: "prompts",
       message: "What would you like to do?",
       choices: Object.values(choices),
-      // choices: ["View all Employees", "View All Employees By Department"],
     })
     .then(function (answer) {
-      switch (answer.action) {
+      switch (answer.prompts) {
         case choices.viewAll:
-          employeeSearch();
-          break;
-
+          employeeSearch(connection);
         case choices.viewAllByDepartment:
           employeesByDepartment();
           break;
@@ -73,6 +80,8 @@ function runSearch(connection) {
         case choices.updateEmployeeManager:
           updateEmployeeManager();
           break;
+        case choices.exit:
+          return;
       }
     });
 }

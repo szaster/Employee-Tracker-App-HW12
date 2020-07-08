@@ -7,7 +7,7 @@ USE employees;
 
 CREATE TABLE department
 (Department_id INT(20)auto_increment NOT NULL,
-Name VARCHAR (30) NOT NULL,
+Department VARCHAR (30) NOT NULL,
 PRIMARY KEY(Department_id)
 );
 
@@ -20,7 +20,6 @@ PRIMARY KEY(Role_id),
 FOREIGN KEY(department_id) REFERENCES department(Department_id)
 );
 
-drop table employee;
   
 CREATE TABLE employee
 (person_id INT(20) auto_increment NOT NULL,
@@ -36,12 +35,12 @@ FOREIGN KEY(manager_id) REFERENCES employee(person_id)
 
 -- ========== Populating department table ============ 
 
-INSERT INTO department (name) VALUES ("IT");
-INSERT INTO department (name) VALUES ("Financial");
-INSERT INTO department (name) VALUES ("Human resources");
-INSERT INTO department (name) VALUES ("Quality assurance");
-INSERT INTO department (name) VALUES ("Marketing and sales");
-INSERT INTO department (name) VALUES ("Research and development");
+INSERT INTO department (department) VALUES ("IT");
+INSERT INTO department (department) VALUES ("Financial");
+INSERT INTO department (department) VALUES ("Human resources");
+INSERT INTO department (department) VALUES ("Quality assurance");
+INSERT INTO department (department) VALUES ("Marketing and sales");
+INSERT INTO department (department) VALUES ("Research and development");
 
 -- ========== Populating role table ============ 
 
@@ -72,7 +71,6 @@ INSERT INTO employee (first_name, last_name, role_id) VALUES ("Esteban", "Rodrig
 
 
 -- =============== Adding managers to employee table ================
--- UPDATE hierarchy SET manager_id = 4 WHERE employee_id = 1;
 UPDATE employee SET manager_id = 4 WHERE person_id = 1;
 UPDATE employee SET manager_id = 6 WHERE person_id = 2;
 UPDATE employee SET manager_id = null WHERE person_id = 3;
@@ -92,3 +90,4 @@ UPDATE employee SET manager_id = 6 WHERE person_id = 12;
 SELECT*FROM department;
 SELECT*FROM role;
 SELECT*FROM employee;
+
