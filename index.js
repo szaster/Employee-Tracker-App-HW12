@@ -2,7 +2,7 @@
 
 const mysql = require("mysql2");
 // const employees = require("console.table");
-// const questionnaire = require("./sections/questionnaire");
+const questionnaire = require("./sections/questionnaire");
 
 // const role = require("console.table");
 // const employee = require("console.table");
@@ -52,23 +52,28 @@ function processDepartment(err, res) {
   );
 }
 
+// function afterConnection() {
+//   connection.query("SELECT * FROM role", function (err, res) {
+//     if (err) throw err;
+//     console.log(res);
+//     res.forEach((role) => console.log(`${role.title}: ${role.salary}`));
+//     connection.end();
+//   });
+// }
+
+function terminateConnection() {
+  connection.end();
+}
+
+function startCLI() {
+  questionnaire.init(connection).then(terminateConnection);
+}
+
 connection.connect(function (err) {
+  // connection.query("SELECT * FROM role", processRoles);
+  // connection.query("SELECT * FROM employee", processEmployee);
+  // connection.query("SELECT * FROM department", processDepartment);
   if (err) throw err;
   console.log("connected as id" + connection.threadId);
-  connection.query("SELECT * FROM role", processRoles);
-  connection.query("SELECT * FROM employee", processEmployee);
-  connection.query("SELECT * FROM department", processDepartment);
-  // questionnaire.welcomeScreen();
-  // init();
-  console.log(data);
-  connection.end();
+  startCLI();
 });
-
-function afterConnection() {
-  connection.query("SELECT * FROM role", function (err, res) {
-    if (err) throw err;
-    console.log(res);
-    res.forEach((role) => console.log(`${role.title}: ${role.salary}`));
-    connection.end();
-  });
-}
