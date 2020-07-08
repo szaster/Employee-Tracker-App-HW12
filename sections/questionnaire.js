@@ -45,16 +45,33 @@ function formatManager(row) {
   return `${row.first_name} ${row.last_name}`;
 }
 
+function extractManagerForId(rows, manager_id) {
+  const maybeManager = rows.filter((row) => row.id === manager_id);
+  if (maybeManager.length > 0) {
+    return formatManager(maybeManager[0]);
+  } else {
+    return "---";
+  }
+}
+
+function formatRow(rows, row) {
+  return {
+    Id: row.id,
+    "First Name": row.first_name,
+    "Last Name": row.last_name,
+    Title: row.title,
+    Department: row.Department,
+    Salary: row.salary,
+    Manager: extractManagerForId(rows, row.manager_id),
+  };
+}
+
 function employeeSearch(connection) {
   const query =
-    "SELECT employee.person_id, employee.first_name, employee.last_name, role.title, department.Department, role.salary, manager_id FROM employee JOIN role on employee.role_id = role.Role_id JOIN department on role.department_id = department.Department_id";
-  return connection.query(query, (err, res) => {
-    console.log(
-      res
-        .filter((row) => row.person_id === res[0].manager_id)
-        .map(formatManager)
-    );
-
+    "SELECT employee.person_id as id, employee.first_name, employee.last_name, role.title, department.Department, role.salary, manager_id FROM employee JOIN role on employee.role_id = role.Role_id JOIN department on role.department_id = department.Department_id";
+  return connection.query(query, (err, rows) => {
+    const table = rows.map((row) => formatRow(rows, row));
+    console.table(table);
     runSearch(connection);
   });
 }
@@ -71,6 +88,7 @@ function runSearch(connection) {
       switch (answer.prompts) {
         case choices.viewAll:
           employeeSearch(connection);
+          break;
         case choices.viewAllByDepartment:
           employeesByDepartment();
           break;
