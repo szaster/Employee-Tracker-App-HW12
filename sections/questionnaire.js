@@ -31,6 +31,9 @@ const choices = {
   addRole: "Add Role",
   addEmployee: "Add Employee",
   viewAllByDepartment: "View All Employees By Department",
+  viewAllDepartments: "View All Departments",
+  viewAllRoles: "View All Roles",
+  viewAllEmployees: "View All Employees",
   updateEmployee: "Update Employee Role",
 
   updateEmployeeManager: "Update Employee Manager",
@@ -83,6 +86,15 @@ function formatRowEmployeeSearch(rows, row) {
   };
 }
 
+function viewDepartments(connection) {
+  const queryString =
+    "SELECT department_id as id, department as name FROM department order by department_id";
+  connection.query(queryString, (error, result) => {
+    console.table(result);
+    return runSearch(connection);
+  });
+}
+
 function employeeSearch(connection) {
   const query =
     "SELECT employee.person_id as id, employee.first_name, employee.last_name, role.title, department.Department, role.salary, manager_id FROM employee JOIN role on employee.role_id = role.Role_id JOIN department on role.department_id = department.Department_id";
@@ -102,10 +114,8 @@ function addDepartment(connection) {
     })
     .then(function (answer) {
       const query = `INSERT INTO department (department) VALUES ("${answer.newDepartment}")`;
-      return connection.query(query, (err, res) => {
-        console.log("Insert result:", res);
-        console.log("Insert error:", err);
-        return runSearch(connection);
+      return connection.query(query, (err, rows) => {
+        return viewDepartments(connection);
       });
     });
 }
@@ -142,8 +152,14 @@ function runSearch(connection) {
         case choices.addEmployee:
           addEmployee(connection);
           break;
-        case choices.viewAllByDepartment:
-          employeesByDepartment(connection);
+        case choices.viewAllDepartments:
+          viewDepartments(connection);
+          break;
+        case choices.viewAllRoles:
+          viewRoles(connection);
+          break;
+        case choices.viewAllEmployees:
+          viewAllEmployees(connection);
           break;
         case choices.updateEmployee:
           updateEmployee(connection);
