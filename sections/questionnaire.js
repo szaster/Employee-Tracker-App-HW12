@@ -26,13 +26,19 @@ function handleExit(data) {
 }
 
 const choices = {
-  viewAll: "View all Employees",
-  viewAllByDepartment: "View All Employees By Department",
-  vielAllByManager: "View All Employees By Manager",
+  viewAll: "View All Employees",
+  addDepartment: "Add Department",
+  addRole: "Add Role",
   addEmployee: "Add Employee",
-  removeEmployee: "Remove Employee",
+  viewAllByDepartment: "View All Employees By Department",
   updateEmployee: "Update Employee Role",
+
   updateEmployeeManager: "Update Employee Manager",
+  viewAllByManager: "View All Employees By Manager",
+  removeEmployee: "Remove Employee",
+  removeDepartment: "Remove Department",
+  removeRole: "Remove Role",
+  viewSalariesByDepartment: "View Department Salaries",
   exit: "Exit",
 };
 
@@ -66,11 +72,32 @@ function formatRow(rows, row) {
   };
 }
 
+function formatRowEmployeeSearch(rows, row) {
+  return {
+    "First Name": row.first_name,
+    "Last Name": row.last_name,
+    Title: row.title,
+    Department: row.Department,
+    // Salary: row.salary,
+    // Manager: extractManagerForId(rows, row.manager_id),
+  };
+}
+
 function employeeSearch(connection) {
   const query =
     "SELECT employee.person_id as id, employee.first_name, employee.last_name, role.title, department.Department, role.salary, manager_id FROM employee JOIN role on employee.role_id = role.Role_id JOIN department on role.department_id = department.Department_id";
   return connection.query(query, (err, rows) => {
     const table = rows.map((row) => formatRow(rows, row));
+    console.table(table);
+    runSearch(connection);
+  });
+}
+
+function employeesByDepartment(connection) {
+  const query =
+    "SELECT employee.person_id as id, employee.first_name, employee.last_name, role.title, department.Department FROM employee JOIN role on employee.role_id = role.Role_id JOIN department on role.department_id = department.Department_id";
+  return connection.query(query, (err, rows) => {
+    const table = rows.map((row) => formatRowEmployeeSearch(rows, row));
     console.table(table);
     runSearch(connection);
   });
@@ -89,29 +116,50 @@ function runSearch(connection) {
         case choices.viewAll:
           employeeSearch(connection);
           break;
-        case choices.viewAllByDepartment:
-          employeesByDepartment();
+        case choices.addDepartment:
+          addDepartment(connection);
           break;
-
-        case choices.vielAllByManager:
-          employeesByManager();
+        case choices.addRole:
+          addRole(connection);
           break;
-
         case choices.addEmployee:
-          addEmployee();
+          addEmployee(connection);
           break;
-
-        case choices.removeEmployee:
-          removeEmployee();
+        case choices.viewAllByDepartment:
+          employeesByDepartment(connection);
           break;
-
         case choices.updateEmployee:
-          updateEmployee();
+          updateEmployee(connection);
           break;
-
+        case choices.vielAllByManager:
+          employeesByManager(connection);
+          break;
+        case choices.addEmployee:
+          addEmployee(connection);
+          break;
+        case choices.removeEmployee:
+          removeEmployee(connection);
+          break;
+        case choices.updateEmployee:
+          updateEmployee(connection);
+          break;
         case choices.updateEmployeeManager:
-          updateEmployeeManager();
+          updateEmployeeManager(connection);
           break;
+        case choices.viewAllByManager:
+          viewEmployeesByManager(connection);
+          break;
+        case choices.removeEmployee:
+          removeEmployee(connection);
+          break;
+        case choices.removeDeaprtment:
+          removeDepartment(connection);
+          break;
+        case choices.removeRole:
+          removeEmployeeRole(connection);
+          break;
+        case choices.viewSalariesByDepartment:
+          viewAllSalariesByDepartment(connection);
         case choices.exit:
           return;
       }
