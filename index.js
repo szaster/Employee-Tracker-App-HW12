@@ -66,7 +66,7 @@ function terminateConnection() {
 }
 
 function startCLI() {
-  questionnaire.init(connection).then(terminateConnection);
+  questionnaire.init(connection); // .then(terminateConnection);
 }
 
 connection.connect(function (err) {

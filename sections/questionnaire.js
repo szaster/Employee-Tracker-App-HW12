@@ -93,6 +93,23 @@ function employeeSearch(connection) {
   });
 }
 
+function addDepartment(connection) {
+  return inquirer
+    .prompt({
+      name: "newDepartment",
+      type: "input",
+      message: "Type a name of a department you want to add:",
+    })
+    .then(function (answer) {
+      const query = `INSERT INTO department (department) VALUES ("${answer.newDepartment}")`;
+      return connection.query(query, (err, res) => {
+        console.log("Insert result:", res);
+        console.log("Insert error:", err);
+        return runSearch(connection);
+      });
+    });
+}
+
 function employeesByDepartment(connection) {
   const query =
     "SELECT employee.person_id as id, employee.first_name, employee.last_name, role.title, department.Department FROM employee JOIN role on employee.role_id = role.Role_id JOIN department on role.department_id = department.Department_id";
