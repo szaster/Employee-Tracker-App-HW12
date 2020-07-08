@@ -36,11 +36,25 @@ const choices = {
   exit: "Exit",
 };
 
+function toAllEmployeeRow(row, allRows) {
+  const manager = row.manager_id;
+  return {};
+}
+
+function formatManager(row) {
+  return `${row.first_name} ${row.last_name}`;
+}
+
 function employeeSearch(connection) {
   const query =
     "SELECT employee.person_id, employee.first_name, employee.last_name, role.title, department.Department, role.salary, manager_id FROM employee JOIN role on employee.role_id = role.Role_id JOIN department on role.department_id = department.Department_id";
   return connection.query(query, (err, res) => {
-    console.table(res);
+    console.log(
+      res
+        .filter((row) => row.person_id === res[0].manager_id)
+        .map(formatManager)
+    );
+
     runSearch(connection);
   });
 }
