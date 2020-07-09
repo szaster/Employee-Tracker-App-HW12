@@ -26,18 +26,18 @@ function handleExit(data) {
 }
 
 const choices = {
-  viewAll: "View All Employees",
-  addDepartment: "Add Department",
+  viewAll: "View All Employees", //done
+  addDepartment: "Add Department", //done
   addRole: "Add Role",
   addEmployee: "Add Employee",
-  viewAllByDepartment: "View All Employees By Department",
-  viewAllDepartments: "View All Departments",
+  viewAllByDepartment: "View All Employees By Department", //done
+  viewAllDepartments: "View All Departments", //done
   viewAllRoles: "View All Roles",
   viewAllEmployees: "View All Employees",
   updateEmployee: "Update Employee Role",
 
   updateEmployeeManager: "Update Employee Manager",
-  viewAllByManager: "View All Employees By Manager",
+  viewAllByManager: "View All Employees By Manager", //done
   removeEmployee: "Remove Employee",
   removeDepartment: "Remove Department",
   removeRole: "Remove Role",
@@ -81,8 +81,6 @@ function formatRowEmployeeSearch(rows, row) {
     "Last Name": row.last_name,
     Title: row.title,
     Department: row.Department,
-    // Salary: row.salary,
-    // Manager: extractManagerForId(rows, row.manager_id),
   };
 }
 
@@ -95,9 +93,18 @@ function viewDepartments(connection) {
   });
 }
 
+function viewRoles(connection) {
+  const queryString =
+    "SELECT Role_id as id, title as Position FROM role order by Role_id";
+  connection.query(queryString, (error, result) => {
+    console.table(result);
+    return runSearch(connection);
+  });
+}
+
 function employeeSearch(connection) {
   const query =
-    "SELECT employee.person_id as id, employee.first_name, employee.last_name, role.title, department.Department, role.salary, manager_id FROM employee JOIN role on employee.role_id = role.Role_id JOIN department on role.department_id = department.Department_id";
+    "SELECT employee.person_id as id, employee.first_name, employee.last_name, role.title, department.Department, role.salary, manager_id FROM employee JOIN role on employee.role_id = role.Role_id JOIN department on role.department_id = department.Department_id order by person_id";
   return connection.query(query, (err, rows) => {
     const table = rows.map((row) => formatRow(rows, row));
     console.table(table);
@@ -118,6 +125,43 @@ function addDepartment(connection) {
         return viewDepartments(connection);
       });
     });
+}
+
+function addRole(connection) {
+  const queryString =
+    "SELECT department_id as id, department as name FROM department order by department_id";
+  return connection.query(queryString, (error, result) => {
+    const departments = result.map((department) => department.name);
+    const questions = [
+      {
+        name: "newRole",
+        type: "input",
+        message: "Type a job position you want to add:",
+      },
+      {
+        name: "department",
+        type: "rawlist",
+        choices: departments,
+        message:
+          "Type department name. If department does not exist, you must first create it.",
+      },
+      {
+        name: "salary",
+        type: "input",
+        message: "Type a salary for the new role",
+      },
+    ];
+    return inquirer.prompt(questions).then(function (answer) {
+      const department_id = result.filter(
+        (department) => department.name === answer.department
+      )[0].id;
+      const query = `INSERT INTO role (title, department_id, salary) VALUES ("${answer.newRole}", ${department_id}, ${answer.salary})`;
+      return connection.query(query, (err, rows) => {
+        console.log(err);
+        return viewRoles(connection);
+      });
+    });
+  });
 }
 
 function employeesByDepartment(connection) {
@@ -159,7 +203,7 @@ function runSearch(connection) {
           viewRoles(connection);
           break;
         case choices.viewAllEmployees:
-          viewAllEmployees(connection);
+          viewEmployees(connection);
           break;
         case choices.updateEmployee:
           updateEmployee(connection);
