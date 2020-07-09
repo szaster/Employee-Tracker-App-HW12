@@ -29,11 +29,10 @@ const choices = {
   viewAll: "View All Employees, Departments, Title, Salary, Manager",
   addDepartment: "Add Department",
   addRole: "Add Role",
-  // addEmployee: "Add Employee",
+  addEmployee: "Add Employee",
   viewAllByDepartment: "View All Employees By Department",
   viewAllDepartments: "View All Departments",
   viewAllRoles: "View All Roles",
-  // viewAllEmployees: "View All Employees",
   // updateEmployee: "Update Employee Role",
 
   // updateEmployeeManager: "Update Employee Manager",
@@ -112,18 +111,17 @@ function employeeSearch(connection) {
 }
 
 function addDepartment(connection) {
-  return inquirer
-    .prompt({
-      name: "newDepartment",
-      type: "input",
-      message: "Type a name of a department you want to add:",
-    })
-    .then(function (answer) {
-      const query = `INSERT INTO department (department) VALUES ("${answer.newDepartment}")`;
-      return connection.query(query, (err, rows) => {
-        return viewDepartments(connection);
-      });
+  const questions = {
+    name: "newDepartment",
+    type: "input",
+    message: "Type a name of a department you want to add:",
+  };
+  return inquirer.prompt(questions).then(function (answer) {
+    const query = `INSERT INTO department (department) VALUES ("${answer.newDepartment}")`;
+    return connection.query(query, (err, rows) => {
+      return viewDepartments(connection);
     });
+  });
 }
 
 function addRole(connection) {
@@ -152,7 +150,7 @@ function addRole(connection) {
     ];
     return inquirer.prompt(questions).then(function (answer) {
       const department_id = result.filter(
-        (department) => department.name === answer.department
+        (item_in_results) => item_in_results.name === answer.department
       )[0].id;
       const query = `INSERT INTO role (title, department_id, salary) VALUES ("${answer.newRole}", ${department_id}, ${answer.salary})`;
       return connection.query(query, (err, rows) => {
@@ -167,43 +165,64 @@ function addRole(connection) {
 
 function addEmployee(connection) {
   const queryString =
-    "SELECT person_id as id, first_name, last_name, role_id FROM employee order by person_id";
+    "SELECT employee.person_id as id, employee.first_name, employee.last_name, role.title, employee.manager_id, department.Department as dep_name, role.salary, manager_id as m_id FROM employee JOIN role on employee.role_id = role.Role_id JOIN department on role.department_id = department.Department_id order by person_id";
+  // "SELECT*FROM employee"
   return connection.query(queryString, (error, result) => {
-    // const firstNames = result.map((firstNames) => firstNames.first_name);
-    // const lastNames = result.map((lastNames) => lastNames.last_name);
-    const title = result.map((title) => title.role_id);
+    console.log(result);
+    const departments = result.map((department) => department.dep_name);
+    const titles = result.map((title) => title.role_id);
+    const manager_ids = result.map((manager_id) => manager_id.m_id);
     const questions = [
       {
-        name: "newEmployeeFirstName",
+        name: "new_first_name",
         type: "input",
         message: "Type a first name of a new employee:",
       },
       {
-        name: "newEmployeeLastName",
+        name: "new_last_name",
         type: "input",
         message: "Type a last name of a new employee:",
       },
       {
         name: "jobTitle",
         type: "rawlist",
-        choices: title,
+        choices: titles,
         message:
           "Type job title. If title does not exist, you must first create it.",
+      },
+      {
+        name: "department",
+        type: "rawlist",
+        choices: departments,
+        message:
+          "Type department name. If department does not exist, you must first create it.",
       },
       {
         name: "salary",
         type: "input",
         message: "Type a salary for the new role",
       },
+      {
+        name: "manager_id",
+        type: "rawlist",
+        choices: manager_ids,
+        message: "Type new employee's manager id",
+      },
     ];
     return inquirer.prompt(questions).then(function (answer) {
-      // const newN = result.filter(
-      // (department) => department.name === answer.department
+      const role_id = result.filter(
+        (item_in_results) => item_in_results.title === answer.jobTitle
+      )[0].id;
+      const manager_id = result.filter(
+        (item_in_results) => item_in_results.manager_id === answer.manager_id
+      )[0].id;
+      // const department_id = result.filter(
+      //   (item_in_results) => item_in_results.dep_name === answer.department
       // )[0].id;
-      const query = `INSERT INTO employee (newEmployeeFirstName, newEmployeeLastName, jobTitle, salary) VALUES ("${answer.newRole}", ${department_id}, ${answer.salary})`;
+      const query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${answer.new_first_name}", "${answer.new_last_name}" "${role_id}", "${manager_id}")`;
       return connection.query(query, (err, rows) => {
         console.log(err);
-        return viewRoles(connection);
+        return employeeSearch(connection);
       });
     });
   });
@@ -239,9 +258,9 @@ function runSearch(connection) {
         case choices.addRole:
           addRole(connection);
           break;
-        // case choices.addEmployee:
-        //   addEmployee(connection);
-        //   break;
+        case choices.addEmployee:
+          addEmployee(connection);
+          break;
         case choices.viewAllByDepartment:
           employeesByDepartment(connection);
           break;
