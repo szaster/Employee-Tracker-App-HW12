@@ -196,6 +196,9 @@ function runSearch(connection) {
         case choices.addEmployee:
           addEmployee(connection);
           break;
+        case choices.viewAllByDepartment:
+          employeesByDepartment(connection);
+          break;
         case choices.viewAllDepartments:
           viewDepartments(connection);
           break;
