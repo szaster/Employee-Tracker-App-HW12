@@ -26,22 +26,21 @@ function handleExit(data) {
 }
 
 const choices = {
-  viewAll: "View All Employees", //done
-  addDepartment: "Add Department", //done
+  viewAll: "View All Employees, Departments, Title, Salary, Manager",
+  addDepartment: "Add Department",
   addRole: "Add Role",
-  addEmployee: "Add Employee",
-  viewAllByDepartment: "View All Employees By Department", //done
-  viewAllDepartments: "View All Departments", //done
+  // addEmployee: "Add Employee",
+  viewAllByDepartment: "View All Employees By Department",
+  viewAllDepartments: "View All Departments",
   viewAllRoles: "View All Roles",
-  viewAllEmployees: "View All Employees",
-  updateEmployee: "Update Employee Role",
+  // viewAllEmployees: "View All Employees",
+  // updateEmployee: "Update Employee Role",
 
-  updateEmployeeManager: "Update Employee Manager",
-  viewAllByManager: "View All Employees By Manager", //done
-  removeEmployee: "Remove Employee",
-  removeDepartment: "Remove Department",
-  removeRole: "Remove Role",
-  viewSalariesByDepartment: "View Department Salaries",
+  // updateEmployeeManager: "Update Employee Manager",
+  // removeEmployee: "Remove Employee",
+  // removeDepartment: "Remove Department",
+  // removeRole: "Remove Role",
+  // viewSalariesByDepartment: "View Department Salaries",
   exit: "Exit",
 };
 
@@ -164,6 +163,53 @@ function addRole(connection) {
   });
 }
 
+//=============================================================
+
+function addEmployee(connection) {
+  const queryString =
+    "SELECT person_id as id, first_name, last_name, role_id FROM employee order by person_id";
+  return connection.query(queryString, (error, result) => {
+    // const firstNames = result.map((firstNames) => firstNames.first_name);
+    // const lastNames = result.map((lastNames) => lastNames.last_name);
+    const title = result.map((title) => title.role_id);
+    const questions = [
+      {
+        name: "newEmployeeFirstName",
+        type: "input",
+        message: "Type a first name of a new employee:",
+      },
+      {
+        name: "newEmployeeLastName",
+        type: "input",
+        message: "Type a last name of a new employee:",
+      },
+      {
+        name: "jobTitle",
+        type: "rawlist",
+        choices: title,
+        message:
+          "Type job title. If title does not exist, you must first create it.",
+      },
+      {
+        name: "salary",
+        type: "input",
+        message: "Type a salary for the new role",
+      },
+    ];
+    return inquirer.prompt(questions).then(function (answer) {
+      // const newN = result.filter(
+      // (department) => department.name === answer.department
+      // )[0].id;
+      const query = `INSERT INTO employee (newEmployeeFirstName, newEmployeeLastName, jobTitle, salary) VALUES ("${answer.newRole}", ${department_id}, ${answer.salary})`;
+      return connection.query(query, (err, rows) => {
+        console.log(err);
+        return viewRoles(connection);
+      });
+    });
+  });
+}
+//===============================================
+
 function employeesByDepartment(connection) {
   const query =
     "SELECT employee.person_id as id, employee.first_name, employee.last_name, role.title, department.Department FROM employee JOIN role on employee.role_id = role.Role_id JOIN department on role.department_id = department.Department_id";
@@ -193,9 +239,9 @@ function runSearch(connection) {
         case choices.addRole:
           addRole(connection);
           break;
-        case choices.addEmployee:
-          addEmployee(connection);
-          break;
+        // case choices.addEmployee:
+        //   addEmployee(connection);
+        //   break;
         case choices.viewAllByDepartment:
           employeesByDepartment(connection);
           break;
@@ -205,41 +251,24 @@ function runSearch(connection) {
         case choices.viewAllRoles:
           viewRoles(connection);
           break;
-        case choices.viewAllEmployees:
-          viewEmployees(connection);
-          break;
-        case choices.updateEmployee:
-          updateEmployee(connection);
-          break;
-        case choices.vielAllByManager:
-          employeesByManager(connection);
-          break;
-        case choices.addEmployee:
-          addEmployee(connection);
-          break;
-        case choices.removeEmployee:
-          removeEmployee(connection);
-          break;
-        case choices.updateEmployee:
-          updateEmployee(connection);
-          break;
-        case choices.updateEmployeeManager:
-          updateEmployeeManager(connection);
-          break;
-        case choices.viewAllByManager:
-          viewEmployeesByManager(connection);
-          break;
-        case choices.removeEmployee:
-          removeEmployee(connection);
-          break;
-        case choices.removeDeaprtment:
-          removeDepartment(connection);
-          break;
-        case choices.removeRole:
-          removeEmployeeRole(connection);
-          break;
-        case choices.viewSalariesByDepartment:
-          viewAllSalariesByDepartment(connection);
+        // case choices.updateEmployee:
+        //   updateEmployee(connection);
+        //   break;
+        // case choices.updateEmployeeManager:
+        //   updateEmployeeManager(connection);
+        //   break;
+        // case choices.removeEmployee:
+        //   removeEmployee(connection);
+        //   break;
+        // case choices.removeDeaprtment:
+        //   removeDepartment(connection);
+        //   break;
+        // case choices.removeRole:
+        //   removeEmployeeRole(connection);
+        //   break;
+        // case choices.viewSalariesByDepartment:
+        //   viewAllSalariesByDepartment(connection);
+        //   break;
         case choices.exit:
           return;
       }
