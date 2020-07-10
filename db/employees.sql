@@ -84,6 +84,7 @@ UPDATE employee SET manager_id = 9 WHERE person_id = 10;
 UPDATE employee SET manager_id = 6 WHERE person_id = 11;
 UPDATE employee SET manager_id = 6 WHERE person_id = 12;
 
+
 SELECT*FROM department;
 SELECT*FROM role;
 SELECT*FROM employee;
