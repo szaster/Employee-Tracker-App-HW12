@@ -35,7 +35,7 @@ Command line interace for Node.js [inquirer.js package](https://www.npmjs.com/pa
 
 Extension for VS code [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) to autoformat the code when saving.
 
-Use console.table package [console.table](https://www.npmjs.com/package/console.table) to print an array of objects as a table in console. 
+Use [console.table](https://www.npmjs.com/package/console.table) package to print an array of objects as a table in console. 
 
 ## License
 
