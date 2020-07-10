@@ -165,13 +165,19 @@ function addRole(connection) {
 
 function addEmployee(connection) {
   const queryString =
-    "SELECT employee.person_id as id, employee.first_name, employee.last_name, role.title, employee.manager_id, department.Department as dep_name, role.salary, manager_id as m_id FROM employee JOIN role on employee.role_id = role.Role_id JOIN department on role.department_id = department.Department_id order by person_id";
+    "SELECT employee.person_id as id, " +
+    "employee.first_name, employee.last_name, role.title, role.role_id, " +
+    "employee.manager_id as m_id, department.Department as dep_name, " +
+    "role.salary FROM employee JOIN role on employee.role_id = role.Role_id " +
+    "JOIN department on role.department_id = department.Department_id order by id";
   // "SELECT*FROM employee"
   return connection.query(queryString, (error, result) => {
     console.log(result);
-    const departments = result.map((department) => department.dep_name);
-    const titles = result.map((title) => title.role_id);
-    const manager_ids = result.map((manager_id) => manager_id.m_id);
+    const departments = [
+      ...new Set(result.map((department) => department.dep_name)),
+    ];
+    const titles = result.map((item) => item.title);
+    const names = result.map((item) => formatManager(item));
     const questions = [
       {
         name: "new_first_name",
@@ -205,14 +211,14 @@ function addEmployee(connection) {
       {
         name: "manager_id",
         type: "rawlist",
-        choices: manager_ids,
+        choices: names,
         message: "Type new employee's manager id",
       },
     ];
     return inquirer.prompt(questions).then(function (answer) {
       const role_id = result.filter(
         (item_in_results) => item_in_results.title === answer.jobTitle
-      )[0].id;
+      )[0].role_id;
       const manager_id = result.filter(
         (item_in_results) => item_in_results.manager_id === answer.manager_id
       )[0].id;

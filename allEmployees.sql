@@ -10,3 +10,9 @@ JOIN department on role.department_id = department.Department_id;
 -- JOIN employee on employee.manager_id = employee.first_name
 
 SELECT*FROM employee 
+
+SELECT employee.person_id as id, 
+employee.first_name, employee.last_name, role.title, 
+employee.manager_id as m_id, department.Department as dep_name, 
+role.salary FROM employee JOIN role on employee.role_id = role.Role_id 
+JOIN department on role.department_id = department.Department_id order by id
