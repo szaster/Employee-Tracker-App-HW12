@@ -33,6 +33,7 @@ const choices = {
   viewAllByDepartment: "View All Employees By Department",
   viewAllDepartments: "View All Departments",
   viewAllRoles: "View All Roles",
+  exit: "Exit",
   // updateEmployee: "Update Employee Role",
 
   // updateEmployeeManager: "Update Employee Manager",
@@ -40,13 +41,7 @@ const choices = {
   // removeDepartment: "Remove Department",
   // removeRole: "Remove Role",
   // viewSalariesByDepartment: "View Department Salaries",
-  exit: "Exit",
 };
-
-function toAllEmployeeRow(row, allRows) {
-  const manager = row.manager_id;
-  return {};
-}
 
 function formatManager(row) {
   return `${row.first_name} ${row.last_name}`;
@@ -115,6 +110,7 @@ function addDepartment(connection) {
     name: "newDepartment",
     type: "input",
     message: "Type a name of a department you want to add:",
+    validate: (newDepartment) => mustNotBeEmpty(newDepartment, "newDepartment"),
   };
   return inquirer.prompt(questions).then(function (answer) {
     const query = `INSERT INTO department (department) VALUES ("${answer.newDepartment}")`;
@@ -134,6 +130,7 @@ function addRole(connection) {
         name: "newRole",
         type: "input",
         message: "Type a job position you want to add:",
+        validate: (newRole) => mustNotBeEmpty(newRole, "newRole"),
       },
       {
         name: "department",
@@ -141,11 +138,13 @@ function addRole(connection) {
         choices: departments,
         message:
           "Type department name. If department does not exist, you must first create it.",
+        validate: (department) => mustNotBeEmpty(department, "department"),
       },
       {
         name: "salary",
         type: "input",
         message: "Type a salary for the new role",
+        validate: (salary) => mustNotBeEmpty(salary, "salary"),
       },
     ];
     return inquirer.prompt(questions).then(function (answer) {
@@ -170,7 +169,6 @@ function addEmployee(connection) {
     "employee.manager_id as m_id, department.Department as dep_name, " +
     "role.salary FROM employee JOIN role on employee.role_id = role.Role_id " +
     "JOIN department on role.department_id = department.Department_id order by id";
-  // "SELECT*FROM employee"
   connection.query(queryString, (error, result) => {
     const titles = result.map((item) => item.title);
     const names = result.map((item) => formatManager(item));
@@ -182,11 +180,15 @@ function addEmployee(connection) {
         name: "new_first_name",
         type: "input",
         message: "Type a first name of a new employee:",
+        validate: (new_first_name) =>
+          mustNotBeEmpty(new_first_name, "new_firt_name"),
       },
       {
         name: "new_last_name",
         type: "input",
         message: "Type a last name of a new employee:",
+        validate: (new_last_name) =>
+          mustNotBeEmpty(new_last_name, "new_last_name"),
       },
       {
         name: "jobTitle",
@@ -262,6 +264,9 @@ function runSearch(connection) {
         case choices.viewAllRoles:
           viewRoles(connection);
           break;
+        case choices.exit:
+          connection.end();
+          process.exit(0);
         // case choices.updateEmployee:
         //   updateEmployee(connection);
         //   break;
@@ -280,8 +285,6 @@ function runSearch(connection) {
         // case choices.viewSalariesByDepartment:
         //   viewAllSalariesByDepartment(connection);
         //   break;
-        case choices.exit:
-          return;
       }
     });
 }
