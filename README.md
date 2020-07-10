@@ -17,7 +17,7 @@ This interactive command-line application processes user input to manage a compa
 
 [Credits](#credits)
 
-[Licence](#license)
+[License](#license)
 
 [Questions](#questions)
 
