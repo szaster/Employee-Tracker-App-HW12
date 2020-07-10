@@ -214,7 +214,7 @@ function addEmployee(connection) {
         "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ";
       const query = `${prefix} ("${answer.new_first_name}", "${answer.new_last_name}", ${role_id}, ${manager_id})`;
       connection.query(query, (err, rows) => {
-        return runSearch(connection);
+        return employeeSearch(connection);
       });
     });
   });
