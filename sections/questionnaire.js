@@ -130,7 +130,7 @@ function addRole(connection) {
         name: "newRole",
         type: "input",
         message: "Type a job position you want to add:",
-        validate: (newRole) => mustNotBeEmpty(newRole, "newRole"),
+        validate: (newRole) => mustNotBeEmpty(newRole, "Role"),
       },
       {
         name: "department",
@@ -138,13 +138,13 @@ function addRole(connection) {
         choices: departments,
         message:
           "Type department name. If department does not exist, you must first create it.",
-        validate: (department) => mustNotBeEmpty(department, "department"),
+        validate: (department) => mustNotBeEmpty(department, "Department"),
       },
       {
         name: "salary",
         type: "input",
         message: "Type a salary for the new role",
-        validate: (salary) => mustNotBeEmpty(salary, "salary"),
+        validate: (salary) => mustNotBeEmpty(salary, "Salary"),
       },
     ];
     return inquirer.prompt(questions).then(function (answer) {
@@ -181,14 +181,13 @@ function addEmployee(connection) {
         type: "input",
         message: "Type a first name of a new employee:",
         validate: (new_first_name) =>
-          mustNotBeEmpty(new_first_name, "new_firt_name"),
+          mustNotBeEmpty(new_first_name, "First name"),
       },
       {
         name: "new_last_name",
         type: "input",
         message: "Type a last name of a new employee:",
-        validate: (new_last_name) =>
-          mustNotBeEmpty(new_last_name, "new_last_name"),
+        validate: (new_last_name) => mustNotBeEmpty(new_last_name, "Last name"),
       },
       {
         name: "jobTitle",
