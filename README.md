@@ -24,7 +24,7 @@ This interactive command-line application processes user input to manage a compa
 ## Installation and usage
 
 Clone the code on your machine and install and import dependencies with `npm install`. 
-Run the application with a command node index.js in a terminal.
+Run the application with a command `node index.js` in a terminal.
 
 
 ## Credits
