@@ -171,13 +171,12 @@ function addEmployee(connection) {
     "role.salary FROM employee JOIN role on employee.role_id = role.Role_id " +
     "JOIN department on role.department_id = department.Department_id order by id";
   // "SELECT*FROM employee"
-  return connection.query(queryString, (error, result) => {
-    console.log(result);
+  connection.query(queryString, (error, result) => {
+    const titles = result.map((item) => item.title);
+    const names = result.map((item) => formatManager(item));
     const departments = [
       ...new Set(result.map((department) => department.dep_name)),
     ];
-    const titles = result.map((item) => item.title);
-    const names = result.map((item) => formatManager(item));
     const questions = [
       {
         name: "new_first_name",
@@ -194,25 +193,13 @@ function addEmployee(connection) {
         type: "rawlist",
         choices: titles,
         message:
-          "Type job title. If title does not exist, you must first create it.",
+          "Choose a job title. If title does not exist, you must first create it.",
       },
       {
-        name: "department",
-        type: "rawlist",
-        choices: departments,
-        message:
-          "Type department name. If department does not exist, you must first create it.",
-      },
-      {
-        name: "salary",
-        type: "input",
-        message: "Type a salary for the new role",
-      },
-      {
-        name: "manager_id",
+        name: "manager_name",
         type: "rawlist",
         choices: names,
-        message: "Type new employee's manager id",
+        message: "Choose new employee manager's name",
       },
     ];
     return inquirer.prompt(questions).then(function (answer) {
@@ -220,15 +207,14 @@ function addEmployee(connection) {
         (item_in_results) => item_in_results.title === answer.jobTitle
       )[0].role_id;
       const manager_id = result.filter(
-        (item_in_results) => item_in_results.manager_id === answer.manager_id
+        (item_in_results) =>
+          formatManager(item_in_results) === answer.manager_name
       )[0].id;
-      // const department_id = result.filter(
-      //   (item_in_results) => item_in_results.dep_name === answer.department
-      // )[0].id;
-      const query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${answer.new_first_name}", "${answer.new_last_name}" "${role_id}", "${manager_id}")`;
-      return connection.query(query, (err, rows) => {
-        console.log(err);
-        return employeeSearch(connection);
+      const prefix =
+        "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ";
+      const query = `${prefix} ("${answer.new_first_name}", "${answer.new_last_name}", ${role_id}, ${manager_id})`;
+      connection.query(query, (err, rows) => {
+        return runSearch(connection);
       });
     });
   });
